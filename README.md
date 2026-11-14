@@ -274,6 +274,7 @@ modules the filler audits (see the docstring of `agentq/filler.py` for the shape
 | `AGENTQ_PI_MODEL` | launcher | default pi model for a direct launch |
 | `AGENTQ_SHIMS` | launcher | `0` to skip the PATH shims |
 | `AGENTQ_GUARD` | shims | `0` to let refused commands through |
+| `AGENTQ_PI_SKILLS` | launcher | `1` to keep pi's skills list in the worker system prompt (off by default: it costs every request several thousand tokens) |
 | `AGENTQ_MEMCAP` | shims | path to `memcap.sh` (default: the one in `scripts/`) |
 | `AGENTQ_MEMCAP_RULES` | `memcap.sh` | optional shell file sourced before the cap runs |
 | `AGENTQ_XDIST_CAP` | pytest plugin | most xdist workers a pytest run may use (default 2) |

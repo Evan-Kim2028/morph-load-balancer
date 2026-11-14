@@ -275,6 +275,19 @@ def write_thinking_level(outdir, level):
         pass
 
 
+SKILLS_ENV = "AGENTQ_PI_SKILLS"
+
+
+def skills_args(environ=None):
+    """``--no-skills`` unless ``AGENTQ_PI_SKILLS=1``.
+
+    pi lists every discovered skill in the system prompt, and that list rides every request of
+    every worker (about 5,400 tokens for 48 skills). Workers can still read a skill file by path.
+    """
+    environ = os.environ if environ is None else environ
+    return [] if (environ.get(SKILLS_ENV) or "").strip() == "1" else ["--no-skills"]
+
+
 def build_argv(label, workspace, prompt_file, outdir, model, thinking=None):
     """The exact pi command line. ``stdin`` is closed by the caller."""
     return [
@@ -287,6 +300,7 @@ def build_argv(label, workspace, prompt_file, outdir, model, thinking=None):
         "--model",
         model,
         *thinking_args(thinking),
+        *skills_args(),
         *brief_args(prompt_file),
         BRIEF_MESSAGE,
     ]
@@ -330,6 +344,7 @@ def build_resume_argv(session_file, outdir, model, prompt_file, thinking=None):
         "--model",
         model,
         *thinking_args(thinking),
+        *skills_args(),
         *brief_args(prompt_file),
         RESUME_PROMPT,
     ]
