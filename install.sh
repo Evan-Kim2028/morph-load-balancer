@@ -72,7 +72,13 @@ for name in "${SERVICES[@]}"; do
   dest="$AGENTS_DIR/$label.plist"
   render "$REPO/agentq/launchd/$label.plist" "$dest"
   plutil -lint "$dest" >/dev/null || die "rendered $dest is not a valid plist"
-  launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
+  if launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1; then
+    launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
+    for _ in $(seq 1 60); do
+      launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1 || break
+      sleep 0.5
+    done
+  fi
   launchctl bootstrap "gui/$(id -u)" "$dest"
   say "loaded $label"
 done
