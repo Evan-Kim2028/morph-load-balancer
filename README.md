@@ -75,10 +75,13 @@ the daemon, the queue depth and the proxy.
   allowance and it refills over 30 minutes. Backlog work waits at the allowance and never
   spends the reserve. Upstream 429 responses are retried inside the proxy and do not reach
   pi. A 429 names a budget, and that budget's reserve is set to zero.
+- **Rolling total window.** Morph's account-wide 10M tokens/minute limit is a rolling 60-second
+  window, so the proxy's `total` budget is rolling too. Counting it per calendar minute let a burst
+  through at each minute boundary, which Morph rejected, and held usage near 80%.
 - **Adaptive targets.** The proxy learns each budget's real limit from the 429 bodies and
   keeps it in `proxy_state.json`. Its target starts at 98% of the limit. A 429 cuts the target
   by 3%, and the target climbs back in small steps while requests succeed. It stays between
-  60% and 150% of the learned limit.
+  60% and 98% of the learned limit (`target_ceiling`).
 - **Filler.** When real work cannot use the DeepSeek allowance, the filler tops the pool up
   with low-priority audit and review jobs (`agentq/fill.py`, `agentq/filler.py`). It adds
   workers only while the billed rate is below the low mark, and only while every gate is open:
@@ -222,7 +225,7 @@ gives each key's default and meaning.
 | `auto_worktree.root` | `~/agentq-worktrees` | folder for those worktrees |
 | `fill.enabled` | false | run the fill controller |
 | `fill.window_minutes` | 2 | minutes averaged for the DeepSeek billed rate |
-| `fill.target_billed_per_min` | 8,000,000 | billed tokens per minute the controller aims for |
+| `fill.target_billed_per_min` | 9,400,000 | billed tokens per minute the controller aims for (steps in below 90% of it, stops near 97%) |
 | `fill.max_workers` | 64 | most DeepSeek workers the controller will start |
 | `fill.low_frac` | 0.90 | below this fraction of the target, the controller adds workers |
 | `fill.high_frac` | 0.97 | above this fraction, growth stops |
