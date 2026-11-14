@@ -1,0 +1,39 @@
+{
+  "providers": {
+    "morph": {
+      "baseUrl": "http://127.0.0.1:18790/v1",
+      "api": "openai-completions",
+      "apiKey": "placeholder-the-proxy-adds-the-real-key",
+      "headers": {
+        "X-Agentq-Job": "!printf %s \"${AGENTQ_JOB:-${AGENTQ_RUN:-none}}\""
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": true,
+        "sendSessionAffinityHeaders": true,
+        "sessionAffinityFormat": "openrouter"
+      },
+      "models": [
+        {
+          "id": "morph-dsv41flash-1017",
+          "name": "DeepSeek V4.1 Flash (Morph)",
+          "reasoning": true,
+          "thinkingLevelMap": {"off": null, "minimal": "low", "low": "low", "medium": "medium", "high": "high", "xhigh": "max"},
+          "input": ["text"],
+          "contextWindow": 128000,
+          "maxTokens": 131072,
+          "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0}
+        },
+        {
+          "id": "morph-kimik31",
+          "name": "Kimi K3.1 (Morph)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 128000,
+          "maxTokens": 32768,
+          "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0}
+        }
+      ]
+    }
+  }
+}

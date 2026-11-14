@@ -23,10 +23,12 @@ You need macOS, Python 3.11 or newer, git, a Morph API key, and the pi CLI.
    services: the broker, the proxy, the dashboard and the housekeeping job. It is safe to
    run again.
 
-2. Point pi at the proxy. In pi's provider settings, add a provider named `morph` whose base
-   URL is `http://127.0.0.1:18790/v1`. The API key can be any placeholder: the proxy adds the
-   real Morph key when it forwards a request. The default model is `morph/morph-dsv41flash-1017`
-   (see Configuration, `models`).
+2. Point pi at the proxy. Merge `examples/pi-models.json` into pi's model file
+   (`~/.pi/agent/models.json`; create it if it does not exist). It adds a provider named `morph`
+   whose base URL is the local proxy. The `apiKey` there is a placeholder: the proxy replaces it
+   with the real Morph key from the Keychain. The `X-Agentq-Job` header tags each request with
+   its job so the dashboard can show tokens per job. The default worker model is
+   `morph/morph-dsv41flash-1017` (see Configuration, `models`).
 
 3. Submit a first job. Use any folder that is a git checkout for `--workspace`.
 
@@ -107,7 +109,8 @@ the daemon, the queue depth and the proxy.
 ## Guards
 
 Workers run with the agentq PATH shims in front of the real commands, so a worker cannot run
-the expensive commands by accident. A refused command exits with status 2, prints one
+the expensive or destructive commands by accident. Allowed `grep`, `rg`, `find` and short
+`sleep` calls are decided in plain sh and never start Python. A refused command exits with status 2, prints one
 `BLOCKED:` line on stderr, and appends a line to `$AGENTQ_HOME/guard_blocks.tsv`.
 
 | Command | Refused when |
@@ -117,8 +120,10 @@ the expensive commands by accident. A refused command exits with status 2, print
 | `select_pytests.py --all` | always |
 | `pre-commit` | with `--all-files` or `-a` |
 | `pyright` | with no file arguments |
-| `sleep` | longer than 120 seconds |
-| `pkill` | always. Kill by PID from a bracket-guarded pattern: `for p in $(pgrep -f '[m]y-pattern'); do kill $p; done` |
+| `sleep` | one sleep longer than 120 seconds, or a job's sleeps adding up past `AGENTQ_SLEEP_BUDGET_S` (default 1800). A refused sleep still waits up to 10 seconds, so a polling loop cannot spin. |
+| `grep` | recursive (`-r`, `-R`, `--recursive`, `-d recurse`) over a git checkout root or a broad folder. Use `rg` or `git grep`, or grep a subfolder. |
+| `rg`, `find` | the search root is `/`, `/Users`, `/System`, `/Library`, `/private`, `/Volumes`, `$HOME`, `$HOME/Documents`, `$HOME/Documents/projects`, `$HOME/Documents/worktrees` or one of its children, or a folder listed in `$AGENTQ_HOME/guard_broad_roots` |
+| `pkill`, `killall` | always. On macOS `pkill -f "x" -P 1` reads `1` as a second pattern and signals every process with a 1 in its command line. Kill by PID from a bracket-guarded pattern: `for p in $(pgrep -f '[m]y-pattern'); do kill $p; done` |
 | `ssh` | none refused. A run to a host in `shims.ssh_gated_hosts` first takes an `ssh` slot; any other ssh run runs unchanged. |
 
 Test runs over the guard are wrapped in `scripts/memcap.sh 8192`, a memory cap for macOS, which
