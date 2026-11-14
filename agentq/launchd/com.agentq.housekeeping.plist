@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template for the agentq housekeeping job. install.sh replaces __HOME__, __PYTHON__,
+  __REPO__ and __AGENTQ_HOME__ and writes the result to ~/Library/LaunchAgents/com.agentq.housekeeping.plist.
+  Do not edit the installed copy; edit this template and run ./install.sh again.
+  Logs go to ~/.local/state/agentq/logs whatever AGENTQ_HOME is.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.agentq.housekeeping</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__PYTHON__</string>
+		<string>-m</string>
+		<string>agentq.cli</string>
+		<string>housekeeping</string>
+		<string>--apply</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>__REPO__</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>__HOME__/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+		<key>AGENTQ_HOME</key>
+		<string>__AGENTQ_HOME__</string>
+	</dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>StartInterval</key>
+	<integer>7200</integer>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>StandardOutPath</key>
+	<string>__HOME__/.local/state/agentq/logs/housekeeping.log</string>
+	<key>StandardErrorPath</key>
+	<string>__HOME__/.local/state/agentq/logs/housekeeping.log</string>
+</dict>
+</plist>

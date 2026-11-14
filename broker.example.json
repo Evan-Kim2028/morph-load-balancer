@@ -1,0 +1,68 @@
+{
+  "slots": {
+    "light": 40,
+    "tests": 6,
+    "ssh": 8
+  },
+  "tiers": {
+    "pi-kimi": 2,
+    "pi-deepseek-flash": 48
+  },
+  "adaptive": {
+    "enabled": true,
+    "max_waiting_requests": 8,
+    "urgent_share": 0.7,
+    "tests_floor": 4,
+    "gauge_ttl_s": 15.0
+  },
+  "laptop": {
+    "tests_max_cpu_busy": 0.8,
+    "tests_min_free_pct": 35.0,
+    "light_max_cpu_busy": 0.92,
+    "light_min_free_pct": 20.0,
+    "max_swap_frac": 0.9,
+    "fill_max_cpu_busy": 0.75,
+    "fill_min_free_pct": 20.0,
+    "fill_max_swap_frac": 0.85,
+    "sample_s": 10.0,
+    "ewma_s": 60.0
+  },
+  "auto_worktree": {
+    "enabled": true,
+    "root": "~/agentq-worktrees"
+  },
+  "fill": {
+    "enabled": false,
+    "window_minutes": 2,
+    "target_billed_per_min": 8000000,
+    "max_workers": 64,
+    "low_frac": 0.9,
+    "high_frac": 0.97,
+    "step_workers": 4,
+    "step_interval_s": 120.0,
+    "gate_429_window_s": 120.0,
+    "reserve_floor_frac": 0.2
+  },
+  "pacing": {
+    "enabled": true,
+    "uncached_limit": 400000,
+    "uncached_frac": 0.8,
+    "first_request_uncached": 40000,
+    "first_request_grace_s": 120.0,
+    "measure_first_request": true,
+    "measure_percentile": 75,
+    "min_measured_jobs": 20,
+    "measure_window_s": 86400.0
+  },
+  "proxy_heal": {
+    "enabled": true,
+    "fail_s": 90.0,
+    "min_interval_s": 600.0,
+    "probe_s": 10.0,
+    "corroborate_lag_ms": 2000.0
+  },
+  "tiers_thinking": {},
+  "shims": {
+    "ssh_gated_hosts": []
+  }
+}

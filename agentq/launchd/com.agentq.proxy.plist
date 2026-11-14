@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template for the agentq proxy job. install.sh replaces __HOME__, __PYTHON__,
+  __REPO__ and __AGENTQ_HOME__ and writes the result to ~/Library/LaunchAgents/com.agentq.proxy.plist.
+  Do not edit the installed copy; edit this template and run ./install.sh again.
+  Logs go to ~/.local/state/agentq/logs whatever AGENTQ_HOME is.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.agentq.proxy</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__PYTHON__</string>
+		<string>-u</string>
+		<string>__REPO__/agentq/proxy.py</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>__REPO__</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>__HOME__/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+		<key>AGENTQ_HOME</key>
+		<string>__AGENTQ_HOME__</string>
+		<key>AGENTQ_PROXY_PORT</key>
+		<string>18790</string>
+		<key>PYTHONUNBUFFERED</key>
+		<string>1</string>
+	</dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>ThrottleInterval</key>
+	<integer>5</integer>
+	<key>ExitTimeOut</key>
+	<integer>40</integer>
+	<key>ProcessType</key>
+	<string>Interactive</string>
+	<key>StandardOutPath</key>
+	<string>__HOME__/.local/state/agentq/logs/proxy.log</string>
+	<key>StandardErrorPath</key>
+	<string>__HOME__/.local/state/agentq/logs/proxy.log</string>
+</dict>
+</plist>

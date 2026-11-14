@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# The agentq command line: submit, wait, result, ls, cancel, slots, status, housekeeping, ...
+# Runs the package from this checkout. AGENTQ_PYTHON picks the interpreter (default python3).
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec env PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" "${AGENTQ_PYTHON:-python3}" -m agentq.cli "$@"
