@@ -21,7 +21,8 @@ You need macOS, Python 3.11 or newer, git, a Morph API key, and the pi CLI.
    (`~/.local/state/agentq`), writes a default `broker.json`, asks for the Morph key if the
    Keychain has none (the key is typed hidden and is not printed), and loads four launchd
    services: the broker, the proxy, the dashboard and the housekeeping job. It is safe to
-   run again.
+   run again. If another agentq install already owns those services, it stops and says so
+   (`--force` replaces them); `uninstall.sh` likewise leaves services from another checkout alone.
 
 2. Point pi at the proxy. Merge `examples/pi-models.json` into pi's model file
    (`~/.pi/agent/models.json`; create it if it does not exist). It adds a provider named `morph`

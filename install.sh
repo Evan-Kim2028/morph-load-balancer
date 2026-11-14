@@ -10,7 +10,7 @@
 # On Linux steps 1 and 2 run and the launchd step is skipped; see the README.
 set -euo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 AGENTQ_HOME="${AGENTQ_HOME:-$HOME/.local/state/agentq}"
 AGENTQ_HOME="${AGENTQ_HOME/#\~/$HOME}"
 KEYCHAIN_SERVICE="morph-api-key"
@@ -67,9 +67,16 @@ render() {
   sed -e "s|__HOME__|$HOME|g" -e "s|__PYTHON__|$PY|g" \
       -e "s|__REPO__|$REPO|g" -e "s|__AGENTQ_HOME__|$AGENTQ_HOME|g" "$1" > "$2"
 }
+FORCE=0
+for arg in "$@"; do
+  [ "$arg" = "--force" ] && FORCE=1
+done
 for name in "${SERVICES[@]}"; do
   label="com.agentq.$name"
   dest="$AGENTS_DIR/$label.plist"
+  if [ -f "$dest" ] && ! grep -qF "$REPO" "$dest" && [ "$FORCE" != 1 ]; then
+    die "$dest belongs to another agentq install; run that install's uninstall.sh first, or pass --force to replace it"
+  fi
   render "$REPO/agentq/launchd/$label.plist" "$dest"
   plutil -lint "$dest" >/dev/null || die "rendered $dest is not a valid plist"
   if launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1; then
